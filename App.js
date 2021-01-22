@@ -1,114 +1,67 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import React, {useEffect} from 'react'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import PushNotification from 'react-native-push-notification';
+import {showNotification, handleCancel, handleScheduledNotification} from './src/notification.android'
 
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const App = () => {
+  useEffect(() => {
+    PushNotification.createChannel(
+      {
+        channelId: 'notif',
+        channelName: 'My Notification channel',
+        channelDescription: 'A channel to categories your notification',
+        soundName: 'default',
+        importance: 4,
+        vibrate: true,
+      },
+      (created) => console.log(`createchannel returned '${created}'`),
+    );
+    // code to run on component mount
+  }, []);
 
-const App: () => React$Node = () => {
+  useEffect(() => {
+    PushNotification.getChannels((channel_ids) => {
+      console.log(channel_ids);
+    });
+  }, []);
+
+  const channel = 'notif';
+
+
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+    <View style={styles.container}>
+      <Text>Push Notification</Text>
+     <TouchableOpacity style={styles.btn} onPress={() => showNotification('Blanja', 'Jangan lupa melakukan pembayaran yaa, ingat selalu belanja di BLANJA ', channel)}>
+       <Text style={{color: 'white'}}>click to get notification</Text>
+     </TouchableOpacity>
+
+     <TouchableOpacity style={styles.btn} onPress={() => handleScheduledNotification('hello', 'show me after 5 second', channel)}>
+       <Text style={{color: 'white', textAlign: 'center'}}>click to get notification Schedule</Text>
+     </TouchableOpacity>
+
+     <TouchableOpacity style={styles.btn} onPress={handleCancel}>
+       <Text style={{color: 'white'}}>click to cancle notification</Text>
+     </TouchableOpacity>
+    </View>
+  )
+}
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  container: {
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center'
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
+  btn: {
+    height: 50, 
+    width: 200, 
+    backgroundColor: 'blue', 
+    borderRadius: 10, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    marginTop: 20
+  }
+})
 
-export default App;
+export default App
